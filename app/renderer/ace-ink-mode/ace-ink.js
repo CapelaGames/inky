@@ -57,7 +57,6 @@ var inkHighlightRules = function() {
                 "choice.label.name",                // label_name
                 "choice.label"                      // )
             ],
-
             // Sub section within choice
             push: [{
                 token: "choice",
@@ -79,6 +78,39 @@ var inkHighlightRules = function() {
                 include: "#mixedContent"
             }, {
                 defaultToken: "choice"
+            }]
+        }],
+        "#dropdown": [{
+            regex: /(\s*)((?:[\^]\s?)+)(\s*)(?:(\(\s*)(\w+)(\s*\)))?/,
+            token: [
+                "dropdown",                           // whitespace
+                "dropdown.bullets",                   // * or +
+                "dropdown",                           // whitespace
+                "dropdown.label",                     // ( 
+                "dropdown.label.name",                // label_name
+                "dropdown.label"                      // )
+            ],
+            // Sub section within dropdown
+            push: [{
+                token: "dropdown",
+                regex: /$/,
+                next: "pop"
+            }, {
+                token: "dropdown.weaveBracket", 
+                regex: /\s*\[\s*/,                  // [ weave start 
+                push: [{ 
+                    token: "dropdown.weaveBracket", 
+                    regex: /\s*\]\s*/,              // ] weave end 
+                    next: "pop" 
+                }, {
+                    include: "#inlineContent" 
+                }, {
+                    defaultToken: "dropdown.weaveInsideBrackets" 
+                }]
+            }, {
+                include: "#mixedContent"
+            }, {
+                defaultToken: "dropdown"
             }]
         }],
         "#escapes": [{
@@ -221,6 +253,8 @@ var inkHighlightRules = function() {
                 ],
             }, {
                 include: "#choice"
+            }, {
+                include: "#dropdown"
             }, {
                 include: "#mixedContent"
             }, {
@@ -495,6 +529,8 @@ var inkHighlightRules = function() {
             include: "#INCLUDE"
         }, {
             include: "#choice"
+        }, {
+            include: "#dropdown"
         }, {
             include: "#gather"
         }, {

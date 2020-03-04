@@ -135,7 +135,8 @@ function compile(compileInstruction, requester) {
     }
 
     playProcess.stdout.on('data', (text) => {
-
+        
+        //console.log(text);
         // Strip Byte order mark
         text = text.replace(/^\uFEFF/, '');
         if( text.length == 0 ) return;
@@ -146,6 +147,7 @@ function compile(compileInstruction, requester) {
             var line = lines[i].trim();
 
             var choiceMatches = line.match(/^(\d+):\s*(.*)/);
+            var dropdownMatches = line.match(/^(\d+):\s*(.*)/);
             var errorMatches = line.match(/^(ERROR|WARNING|RUNTIME ERROR|RUNTIME WARNING|TODO): ('([^']+)' )?line (\d+): (.+)/);
             var tagMatches = line.match(/^(# tags:) (.+)/);
             var promptMatches = line.match(/^\?>/);
@@ -173,7 +175,12 @@ function compile(compileInstruction, requester) {
                     number: parseInt(choiceMatches[1]),
                     text: choiceMatches[2]
                 }, sessionId);
-            } else if( promptMatches ) {
+            } else if( dropdownMatches ) {
+                requester.send("play-generated-dropdown", {
+                    number: parseInt(dropdownMatches[1]),
+                    text: dropdownMatches[2]
+                }, sessionId);
+            }else if( promptMatches ) {
                 sendAnyErrors();
                 if( session.evaluatingExpression )
                     session.evaluatingExpression = false;
@@ -267,6 +274,15 @@ ipc.on("play-continue-with-choice-number", (event, choiceNumber, sessionId) => {
             playProcess.stdin.write(""+choiceNumber+"\n");
     }
 });
+
+ipc.on("play-continue-with-dropdown-choice-number", (event, choiceNumber, sessionId) => {
+    if( sessions[sessionId] ) {
+        const playProcess = sessions[sessionId].process;
+        if( playProcess )
+            playProcess.stdin.write(""+choiceNumber+"\n");
+    }
+});
+
 
 ipc.on("evaluate-expression", (event, expressionText, sessionId) => {
     var session = sessions[sessionId];

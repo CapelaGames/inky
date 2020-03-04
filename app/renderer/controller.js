@@ -100,6 +100,14 @@ LiveCompiler.setEvents({
             });
         }
     },
+    dropdownAdded:(dropdown, isLatestTurn) => {
+        if( isLatestTurn ) {
+            PlayerView.addDropdown(dropdown, () => {
+                LiveCompiler.dropdown(dropdown)
+            });
+        }
+    },
+    
     errorsAdded: (errors) => {
         for(var i=0; i<errors.length; i++) {
             var error = errors[i];

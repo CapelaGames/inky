@@ -203,6 +203,36 @@ function addChoice(choice, callback)
     });
 }
 
+function addDropdown(dropdownText, callback)
+{
+    var $dropdown = $("<a href='#'>"+dropdownText.text+"</a>");
+
+    // Append the choice
+    var $dropdownPara = $("<p class='dropdown'></p>");
+    $dropdownPara.append($dropdown);
+    $textBuffer.append($dropdownPara);
+
+    // Fade it in
+    if( shouldAnimate() )
+        fadeIn($dropdownPara);
+
+    // When this choice is clicked...
+    $dropdown.on("click", (event) => {
+
+        var existingHeight = $textBuffer.height();
+        $textBuffer.height(existingHeight);
+
+        // Remove any existing choices, and add a divider
+        $(".dropdown").remove();
+
+        addHorizontalDivider();
+
+        event.preventDefault();
+
+        callback();
+    });
+}
+
 function addTerminatingMessage(message, cssClass)
 {
     var $message = $(`<p class='${cssClass}'>${message}</p>`);
@@ -263,6 +293,7 @@ exports.PlayerView = {
     addTextSection: addTextSection,
     addTags: addTags,
     addChoice: addChoice,
+    addDropdown:addDropdown,
     addTerminatingMessage: addTerminatingMessage,
     addLongMessage: addLongMessage,
     addHorizontalDivider: addHorizontalDivider,

@@ -119,6 +119,12 @@ function choose(choice) {
     currentTurnIdx++;
 }
 
+function dropdown(choice){
+    ipc.send("play-continue-with-dropdown-choice-number", choice.number, choice.sourceSessionId);
+    choiceSequence.push(choice.number);
+    currentTurnIdx++;
+}
+
 function rewind() {
     choiceSequence = [];
     currentTurnIdx = -1;
@@ -214,6 +220,18 @@ ipc.on("play-generated-choice", (event, choice, fromSessionId) => {
     var turnCount = choiceSequence.length+1;
     var isLatestTurn = currentTurnIdx >= turnCount-1;
     events.choiceAdded(choice, isLatestTurn);
+});
+
+ipc.on("play-generated-dropdown", (event, dropdown, fromSessionId) => {
+
+    if( fromSessionId != currentPlaySessionId ) return;
+
+    dropdown.sourceSessionId = fromSessionId;
+
+    // If there's one choice, that means there are two turns/chunks
+    var turnCount = choiceSequence.length+1;
+    var isLatestTurn = currentTurnIdx >= turnCount-1;
+    events.dropdownAdded(dropdown, isLatestTurn);
 });
 
 ipc.on("play-requires-input", (event, fromSessionId) => {
@@ -322,6 +340,7 @@ exports.LiveCompiler = {
     getIssues: () => { return issues; },
     getIssuesForFilename: (filename) => _.filter(issues, i => i.filename == filename),
     choose: choose,
+    dropdown: dropdown,
     rewind: rewind,
     stepBack: stepBack,
     getLocationInSource: getLocationInSource,

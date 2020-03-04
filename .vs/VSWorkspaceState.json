@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\app",
+    "\\app\\export-for-web-template",
+    "\\app\\main-process",
+    "\\app\\main-process\\ink",
+    "\\app\\renderer",
+    "\\app\\renderer\\ace-ink-mode",
+    "\\app\\resources",
+    "\\build",
+    "\\resources"
+  ],
+  "SelectedNode": "\\app\\renderer\\playerView.js",
+  "PreviewInSolutionExplorer": false
+}
